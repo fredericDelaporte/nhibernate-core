@@ -76,9 +76,8 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 				var metaData = dialect.GetDataBaseSchema(connectionHelper.Connection);
 				foreach (var rw in metaData.GetReservedWords())
 				{
-					var rwl = rw.ToLowerInvariant();
-					if (rwl.Contains(", version=")) continue;
-					reservedDb.Add(rwl);
+					if (rw.Contains(" ")) continue;
+					reservedDb.Add(rw.ToLowerInvariant());
 				}
 			}
 			finally
