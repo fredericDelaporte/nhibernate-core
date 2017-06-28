@@ -99,6 +99,13 @@ namespace NHibernate.Dialect.Schema
 			{
 				result.Add(row["ReservedWord"].ToString());
 			}
+
+			DataTable dtTypes = connection.GetSchema(DbMetaDataCollectionNames.DataTypes);
+			foreach (DataRow row in dtTypes.Rows)
+			{
+				result.Add(row["TypeName"].ToString());
+			}
+
 			return result;
 		}
 
