@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NHibernate.Dialect;
+using NHibernate.Driver;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using NHibernate.Tool.hbm2ddl;
@@ -101,6 +103,11 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 				}
 			}
 
+			if (sf.ConnectionProvider.Driver is OdbcDriver)
+			{
+				Assert.Inconclusive("ODBC has excess keywords reserved");
+			}
+
 			Assert.That(match, Is.EquivalentTo(reservedDb));
 		}
 
@@ -129,7 +136,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 
 			// use the dialect as configured, with no update
 			// tests that nothing in Dialect.Keyword is not in metaData.GetReservedWords()
-			var differences = sf.Dialect.Keywords.Except(reservedDb).ToList();
+			var differences = sf.Dialect.Keywords.Except(reservedDb).Except(AnsiSqlKeywords.Sql2003).ToList();
 			if (differences.Count > 0)
 			{
 				Console.WriteLine("Excess RegisterKeyword in Dialect {0}:", sf.Dialect.GetType().Name);
@@ -140,7 +147,7 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 			}
 
 			// Don't fail incase the driver returns nothing.
-			//Assert.That(sf.Dialect.Keywords, Is.EquivalentTo(reservedDb));
+			// This is an info-only test.
 		}
 
 		[Test]

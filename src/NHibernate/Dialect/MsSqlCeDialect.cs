@@ -18,6 +18,158 @@ namespace NHibernate.Dialect
 	{
 		public MsSqlCeDialect()
 		{
+			RegisterTypeMapping();
+
+			RegisterFunctions();
+
+			RegisterKeywords();
+
+			RegisterDefaultProperties();
+		}
+
+		protected virtual void RegisterDefaultProperties()
+		{
+			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SqlServerCeDriver";
+			DefaultProperties[Environment.PrepareSql] = "false";
+		}
+
+		#region private static readonly string[] DialectKeywords = { ... }
+
+		private static readonly string[] DialectKeywords =
+		{
+			"apply",
+			"asc",
+			"backup",
+			"bit",
+			"break",
+			"browse",
+			"bulk",
+			"cascade",
+			"checkpoint",
+			"clustered",
+			"coalesce",
+			"compute",
+			"contains",
+			"containstable",
+			"convert",
+			"database",
+			"datetime",
+			"dbcc",
+			"deny",
+			"desc",
+			"disk",
+			"distributed",
+			"dump",
+			"errlvl",
+			"file",
+			"fillfactor",
+			"first",
+			"freetext",
+			"freetexttable",
+			"goto",
+			"holdlock",
+			"identity_insert",
+			"identitycol",
+			"image",
+			"index",
+			"key",
+			"kill",
+			"lineno",
+			"load",
+			"money",
+			"next",
+			"nocheck",
+			"nonclustered",
+			"ntext",
+			"nullif",
+			"nvarchar",
+			"off",
+			"offset",
+			"offsets",
+			"opendatasource",
+			"openquery",
+			"openrowset",
+			"openxml",
+			"option",
+			"percent",
+			"pivot",
+			"plan",
+			"print",
+			"proc",
+			"public",
+			"raiserror",
+			"read",
+			"readtext",
+			"reconfigure",
+			"replication",
+			"restore",
+			"restrict",
+			"revert",
+			"rowcount",
+			"rowguidcol",
+			"rowversion",
+			"rule",
+			"save",
+			"schema",
+			"session_user",
+			"setuser",
+			"shutdown",
+			"statistics",
+			"textsize",
+			"tinyint",
+			"top",
+			"tran",
+			"transaction",
+			"truncate",
+			"tsequal",
+			"uniqueidentifier",
+			"unpivot",
+			"updatetext",
+			"use",
+			"varbinary",
+			"view",
+			"waitfor",
+			"writetext",
+			"xmlunnest",
+		};
+
+		#endregion
+
+		protected virtual void RegisterKeywords()
+		{
+			RegisterKeywords(DialectKeywords);
+		}
+
+		protected virtual void RegisterFunctions()
+		{
+			RegisterFunction("substring", new EmulatedLengthSubstringFunction());
+			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as nvarchar)"));
+
+			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.DateTime, "dateadd(dd, 0, datediff(dd, 0, ?1))"));
+			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(second, ?1)"));
+			RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(minute, ?1)"));
+			RegisterFunction("hour", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(hour, ?1)"));
+			RegisterFunction("day", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(day, ?1)"));
+			RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(month, ?1)"));
+			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(year, ?1)"));
+
+			RegisterFunction("length", new StandardSQLFunction("len", NHibernateUtil.Int32));
+			RegisterFunction("locate", new StandardSQLFunction("charindex", NHibernateUtil.Int32));
+			RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
+			RegisterFunction("rtrim", new StandardSQLFunction("rtrim"));
+			RegisterFunction("ltrim", new StandardSQLFunction("ltrim"));
+			RegisterFunction("upper", new StandardSQLFunction("upper"));
+			RegisterFunction("lower", new StandardSQLFunction("lower"));
+
+			RegisterFunction("trim", new AnsiTrimEmulationFunction());
+
+			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "+", ")"));
+
+			RegisterFunction("round", new StandardSQLFunction("round"));
+		}
+
+		protected virtual void RegisterTypeMapping()
+		{
 			RegisterColumnType(DbType.AnsiStringFixedLength, "NCHAR(255)");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 4000, "NCHAR($l)");
 			RegisterColumnType(DbType.AnsiString, "NVARCHAR(255)");
@@ -45,34 +197,6 @@ namespace NHibernate.Dialect
 			RegisterColumnType(DbType.String, 4000, "NVARCHAR($l)");
 			RegisterColumnType(DbType.String, 1073741823, "NTEXT");
 			RegisterColumnType(DbType.Time, "DATETIME");
-
-			RegisterFunction("substring", new EmulatedLengthSubstringFunction());
-			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as nvarchar)")); 
-
-			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.DateTime, "dateadd(dd, 0, datediff(dd, 0, ?1))"));
-			RegisterFunction("second", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(second, ?1)"));
-			RegisterFunction("minute", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(minute, ?1)"));
-			RegisterFunction("hour", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(hour, ?1)"));
-			RegisterFunction("day", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(day, ?1)"));
-			RegisterFunction("month", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(month, ?1)"));
-			RegisterFunction("year", new SQLFunctionTemplate(NHibernateUtil.Int32, "datepart(year, ?1)"));
-
-			RegisterFunction("length", new StandardSQLFunction("len", NHibernateUtil.Int32));
-			RegisterFunction("locate", new StandardSQLFunction("charindex", NHibernateUtil.Int32));
-			RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
-			RegisterFunction("rtrim", new StandardSQLFunction("rtrim"));
-			RegisterFunction("ltrim", new StandardSQLFunction("ltrim"));
-			RegisterFunction("upper", new StandardSQLFunction("upper"));
-			RegisterFunction("lower", new StandardSQLFunction("lower"));
-
-			RegisterFunction("trim", new AnsiTrimEmulationFunction());
-
-			RegisterFunction("concat", new VarArgsSQLFunction(NHibernateUtil.String, "(", "+", ")"));
-
-			RegisterFunction("round", new StandardSQLFunction("round"));
-
-			DefaultProperties[Environment.ConnectionDriver] = "NHibernate.Driver.SqlServerCeDriver";
-			DefaultProperties[Environment.PrepareSql] = "false";
 		}
 
 		public override string AddColumnString
