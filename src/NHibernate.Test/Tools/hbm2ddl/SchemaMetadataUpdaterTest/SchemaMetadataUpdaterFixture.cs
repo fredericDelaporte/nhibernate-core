@@ -157,7 +157,8 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 			configuration.AddResource("NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest.HeavyEntity.hbm.xml",
 																GetType().Assembly);
 
-			SchemaMetadataUpdater.QuoteTableAndColumns(configuration);
+			var dialect = Dialect.Dialect.GetDialect(configuration.GetDerivedProperties());
+			SchemaMetadataUpdater.QuoteTableAndColumns(configuration, dialect);
 
 			var cm = configuration.GetClassMapping(typeof(Order));
 			Assert.That(cm.Table.IsQuoted);
@@ -258,7 +259,8 @@ namespace NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest
 			configuration.AddResource("NHibernate.Test.Tools.hbm2ddl.SchemaMetadataUpdaterTest.HeavyEntity.hbm.xml",
 																GetType().Assembly);
 
-			SchemaMetadataUpdater.QuoteTableAndColumns(configuration);
+			var dialect = Dialect.Dialect.GetDialect(configuration.GetDerivedProperties());
+			SchemaMetadataUpdater.QuoteTableAndColumns(configuration, dialect);
 
 			var cm = configuration.GetClassMapping(typeof(Order));
 			Assert.That(cm.Table.IsQuoted);

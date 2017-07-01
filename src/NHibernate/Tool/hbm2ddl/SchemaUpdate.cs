@@ -141,7 +141,8 @@ namespace NHibernate.Tool.hbm2ddl
 			autoKeyWordsImport = autoKeyWordsImport.ToLowerInvariant();
 			if (autoKeyWordsImport == Hbm2DDLKeyWords.AutoQuote)
 			{
-				SchemaMetadataUpdater.QuoteTableAndColumns(configuration);
+				SchemaMetadataUpdater.Update(configuration, dialect);
+				SchemaMetadataUpdater.QuoteTableAndColumns(configuration, dialect);
 			}
 
 			DbConnection connection;

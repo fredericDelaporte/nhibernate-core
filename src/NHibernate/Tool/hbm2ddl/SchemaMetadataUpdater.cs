@@ -1,24 +1,39 @@
+using System;
 using NHibernate.Cfg;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 using System.Collections.Generic;
+using NHibernate.Connection;
 
 namespace NHibernate.Tool.hbm2ddl
 {
 	// Candidate to be exstensions of ISessionFactory and Configuration
 	public static class SchemaMetadataUpdater
 	{
-		public static void Update(ISessionFactory sessionFactory)
+		public static void Update(ISessionFactoryImplementor sessionFactory)
 		{
-			var factory = (ISessionFactoryImplementor) sessionFactory;
-			var dialect = factory.Dialect;
-			var connectionHelper = new SuppliedConnectionProviderConnectionHelper(factory.ConnectionProvider);
-			factory.Dialect.Keywords.UnionWith(GetReservedWords(dialect, connectionHelper));
+			var reservedWords = GetReservedWords(sessionFactory.ConnectionProvider, sessionFactory.Dialect);
+			sessionFactory.Dialect.Keywords.UnionWith(reservedWords);
 		}
 
+		public static void Update(Configuration configuration, Dialect.Dialect dialect)
+		{
+			dialect.Keywords.UnionWith(GetReservedWords(configuration, dialect));
+		}
+
+		[Obsolete("Use the overload that passes dialect so keywords will be updated and persisted before auto-quoting")]
 		public static void QuoteTableAndColumns(Configuration configuration)
 		{
-			ISet<string> reservedDb = GetReservedWords(configuration.GetDerivedProperties());
+			// Instantiates a new instance of the dialect so doesn't benefit from the Update call.
+			var dialect = Dialect.Dialect.GetDialect(configuration.GetDerivedProperties());
+			Update(configuration, dialect);
+			QuoteTableAndColumns(configuration, dialect);
+		}
+
+		public static void QuoteTableAndColumns(Configuration configuration, Dialect.Dialect dialect)
+		{
+			ISet<string> reservedDb = dialect.Keywords;
+
 			foreach (var cm in configuration.ClassMappings)
 			{
 				QuoteTable(cm.Table, reservedDb);
@@ -29,30 +44,43 @@ namespace NHibernate.Tool.hbm2ddl
 			}
 		}
 
-		private static ISet<string> GetReservedWords(IDictionary<string, string> cfgProperties)
+		private static ISet<string> GetReservedWords(Configuration configuration, Dialect.Dialect dialect)
 		{
-			var dialect = Dialect.Dialect.GetDialect(cfgProperties);
-			var connectionHelper = new ManagedProviderConnectionHelper(cfgProperties);
-			return GetReservedWords(dialect, connectionHelper);
-		}
-
-		private static ISet<string> GetReservedWords(Dialect.Dialect dialect, IConnectionHelper connectionHelper)
-		{
-			ISet<string> reservedDb = new HashSet<string>();
+			IConnectionHelper connectionHelper = new ManagedProviderConnectionHelper(configuration.GetDerivedProperties());
 			connectionHelper.Prepare();
 			try
 			{
-				var metaData = dialect.GetDataBaseSchema(connectionHelper.Connection);
-				foreach (var rw in metaData.GetReservedWords())
-				{
-					reservedDb.Add(rw.ToLowerInvariant());
-				}
+				return GetReservedWords(dialect, connectionHelper);
 			}
 			finally
 			{
 				connectionHelper.Release();
 			}
-			return reservedDb;
+		}
+
+		private static ISet<string> GetReservedWords(IConnectionProvider connectionProvider, Dialect.Dialect dialect)
+		{
+			IConnectionHelper connectionHelper = new SuppliedConnectionProviderConnectionHelper(connectionProvider);
+			connectionHelper.Prepare();
+			try
+			{
+				return GetReservedWords(dialect, connectionHelper);
+			}
+			finally
+			{
+				connectionHelper.Release();
+			}
+		}
+
+		private static ISet<string> GetReservedWords(Dialect.Dialect dialect, IConnectionHelper connectionHelper)
+		{
+			ISet<string> reservedWords = new HashSet<string>(dialect.Keywords);
+			var metaData = dialect.GetDataBaseSchema(connectionHelper.Connection);
+			foreach (var rw in metaData.GetReservedWords())
+			{
+				reservedWords.Add(rw.ToLowerInvariant());
+			}
+			return reservedWords;
 		}
 
 		private static void QuoteTable(Table table, ICollection<string> reservedDb)
