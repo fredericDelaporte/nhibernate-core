@@ -346,16 +346,16 @@ namespace NHibernate.Dialect
 
 		protected virtual void RegisterKeywords()
 		{
-			RegisterKeyword("TOP");
-			RegisterKeyword("FIRST");
-			RegisterKeyword("FETCH");
-			RegisterKeyword("START");
-			RegisterKeyword("AT");
-			RegisterKeyword("WITH");
-			RegisterKeyword("CONTAINS");
-			RegisterKeyword("REGEXP");
-			RegisterKeyword("SIMILAR");
-			RegisterKeyword("SEQUENCE");
+			RegisterKeyword("top");
+			RegisterKeyword("first");
+			RegisterKeyword("fetch");
+			RegisterKeyword("start");
+			RegisterKeyword("at");
+			RegisterKeyword("with");
+			RegisterKeyword("contains");
+			RegisterKeyword("regexp");
+			RegisterKeyword("similar");
+			RegisterKeyword("sequence");
 		}
 
 		#region IDENTITY or AUTOINCREMENT support
