@@ -147,6 +147,7 @@
     <Compile Include="Context\AsyncLocalSessionContext.cs" />
     <Compile Include="Dialect\AnsiSqlKeywords.cs" />
     <Compile Include="Dialect\PostgreSQL83Dialect.cs" />
+    <Compile Include="Driver\SapSQLAnywhere17Driver.cs" />
     <Compile Include="Impl\ISharedSessionCreationOptions.cs" />
     <Compile Include="ISharedSessionBuilder.cs" />
     <Compile Include="IStatelessSessionBuilder.cs" />
