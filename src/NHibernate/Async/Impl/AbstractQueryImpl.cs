@@ -14,17 +14,16 @@ using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Hql;
-using NHibernate.Properties;
 using NHibernate.Proxy;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Linq;
-using System.Threading;
 
 namespace NHibernate.Impl
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	/// <content>
 	/// Contains generated async methods
 	/// </content>
@@ -39,24 +38,17 @@ namespace NHibernate.Impl
 		public abstract Task<IList> ListAsync(CancellationToken cancellationToken = default(CancellationToken));
 		public abstract Task ListAsync(IList results, CancellationToken cancellationToken = default(CancellationToken));
 		public abstract Task<IList<T>> ListAsync<T>(CancellationToken cancellationToken = default(CancellationToken));
+
 		public async Task<T> UniqueResultAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			object result = await (UniqueResultAsync(cancellationToken)).ConfigureAwait(false);
-			if (result == null && typeof(T).IsValueType)
-			{
-				return default(T);
-			}
-			else
-			{
-				return (T)result;
-			}
+			return UniqueElement(await (ListAsync<T>(cancellationToken)).ConfigureAwait(false));
 		}
 
 		public async Task<object> UniqueResultAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			return UniqueElement(await (ListAsync(cancellationToken)).ConfigureAwait(false));
+			return UniqueElement(await (ListAsync<object>(cancellationToken)).ConfigureAwait(false));
 		}
 
 		#endregion

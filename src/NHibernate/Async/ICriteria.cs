@@ -42,20 +42,23 @@ namespace NHibernate
 		/// If there is more than one matching result
 		/// </exception>
 		Task<object> UniqueResultAsync(CancellationToken cancellationToken = default(CancellationToken));
-	
+
 		#region NHibernate specific
 
 		/// <summary>
-		/// Get the results and fill the <see cref="IList"/>
+		/// Get the results and fill the <see cref="IList{T}"/>
 		/// </summary>
 		/// <param name="results">The list to fill with the results.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		Task ListAsync(IList results, CancellationToken cancellationToken = default(CancellationToken));
+		/// <typeparam name="T">The type of the result elements.</typeparam>
+		Task ListAsync<T>(IList<T> results, CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>
-		/// Strongly-typed version of <see cref="List()" />.
+		/// Get the results.
 		/// </summary>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>The results.</returns>
+		/// <typeparam name="T">The type of the result elements.</typeparam>
 		Task<IList<T>> ListAsync<T>(CancellationToken cancellationToken = default(CancellationToken));
 
 		/// <summary>

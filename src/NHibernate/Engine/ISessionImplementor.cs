@@ -101,7 +101,13 @@ namespace NHibernate.Engine
 		/// </summary>
 		IList<T> List<T>(CriteriaImpl criteria);
 
-		void List(CriteriaImpl criteria, IList results);
+		/// <summary>
+		/// Execute a criteria query, filling its result into supplied list.
+		/// </summary>
+		/// <typeparam name="T">The type of result elements.</typeparam>
+		/// <param name="criteria">The criteria query.</param>
+		/// <param name="results">The result list to fill.</param>
+		void List<T>(CriteriaImpl criteria, IList<T> results);
 
 		IList List(CriteriaImpl criteria);
 

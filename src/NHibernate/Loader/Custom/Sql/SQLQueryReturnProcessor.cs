@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 
 using NHibernate.Engine;
@@ -284,9 +283,9 @@ namespace NHibernate.Loader.Custom.Sql
 			}
 		}
 
-		public IList GenerateCustomReturns(bool queryHadAliases)
+		public IList<IReturn> GenerateCustomReturns(bool queryHadAliases)
 		{
-			IList customReturns = new List<object>();
+			var customReturns = new List<IReturn>();
 			IDictionary<string, object> customReturnsByAlias = new Dictionary<string, object>();
 			for (int i = 0; i < queryReturns.Length; i++)
 			{

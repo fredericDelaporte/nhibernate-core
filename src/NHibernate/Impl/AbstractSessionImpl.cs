@@ -115,7 +115,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public abstract void List(CriteriaImpl criteria, IList results);
+		public abstract void List<T>(CriteriaImpl criteria, IList<T> results);
 
 		public virtual IList List(CriteriaImpl criteria)
 		{

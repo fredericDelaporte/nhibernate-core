@@ -4,13 +4,11 @@ using System.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Hql;
-using NHibernate.Properties;
 using NHibernate.Proxy;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Linq;
-using System.Threading;
 
 namespace NHibernate.Impl
 {
@@ -934,40 +932,27 @@ namespace NHibernate.Impl
 		public abstract IList List();
 		public abstract void List(IList results);
 		public abstract IList<T> List<T>();
+
 		public T UniqueResult<T>()
 		{
-			object result = UniqueResult();
-			if (result == null && typeof(T).IsValueType)
-			{
-				return default(T);
-			}
-			else
-			{
-				return (T)result;
-			}
+			return UniqueElement(List<T>());
 		}
 
 		public object UniqueResult()
 		{
-			return UniqueElement(List());
+			return UniqueElement(List<object>());
 		}
 
-		internal static object UniqueElement(IList list)
+		internal static T UniqueElement<T>(IList<T> list)
 		{
-			int size = list.Count;
-			if (size == 0)
+			if (list.Count == 0)
 			{
-				return null;
+				return default(T);
 			}
-			object first = list[0];
-			for (int i = 1; i < size; i++)
-			{
-				if (list[i] != first)
-				{
-					throw new NonUniqueResultException(size);
-				}
-			}
-			return first;
+			var count = list.Distinct().Count();
+			if (count > 1)
+				throw new NonUniqueResultException(count);
+			return list.First();
 		}
 
 		public virtual IType[] TypeArray()

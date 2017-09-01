@@ -78,7 +78,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public abstract Task ListAsync(CriteriaImpl criteria, IList results, CancellationToken cancellationToken);
+		public abstract Task ListAsync<T>(CriteriaImpl criteria, IList<T> results, CancellationToken cancellationToken);
 
 		public virtual async Task<IList> ListAsync(CriteriaImpl criteria, CancellationToken cancellationToken)
 		{

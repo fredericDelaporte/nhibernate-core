@@ -141,7 +141,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override void List(CriteriaImpl criteria, IList results)
+		public override void List<T>(CriteriaImpl criteria, IList<T> results)
 		{
 			using (new SessionIdLoggingContext(SessionId))
 			{

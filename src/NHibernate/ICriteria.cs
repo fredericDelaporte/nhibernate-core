@@ -22,11 +22,11 @@ namespace NHibernate
 	/// the factory methods on <see cref="Expression" />. eg:
 	/// </para>
 	/// <code>
-	/// IList cats = session.CreateCriteria(typeof(Cat))
+	/// var cats = session.CreateCriteria(typeof(Cat))
 	/// 	.Add(Expression.Like("name", "Iz%"))
 	/// 	.Add(Expression.Gt("weight", minWeight))
 	/// 	.AddOrder(Order.Asc("age"))
-	/// 	.List();
+	/// 	.List&gt;Cat&lt;();
 	/// </code>
 	/// You may navigate associations using <see cref="CreateAlias(string, string)" />
 	/// or <see cref="CreateCriteria(string)" />. eg:
@@ -113,7 +113,7 @@ namespace NHibernate
 		ICriteria Add(ICriterion expression);
 
 		/// <summary>
-		/// An an Order to the result set
+		/// Add an Order to the result set
 		/// </summary>
 		/// <param name="order"></param>
 		ICriteria AddOrder(Order order);
@@ -345,18 +345,21 @@ namespace NHibernate
 		/// <seealso cref="ICriteria.IsReadOnly" />
 		/// <seealso cref="ICriteria.IsReadOnlyInitialized" />
 		ICriteria SetReadOnly(bool readOnly);
-	
+
 		#region NHibernate specific
 
 		/// <summary>
-		/// Get the results and fill the <see cref="IList"/>
+		/// Get the results and fill the <see cref="IList{T}"/>
 		/// </summary>
 		/// <param name="results">The list to fill with the results.</param>
-		void List(IList results);
+		/// <typeparam name="T">The type of the result elements.</typeparam>
+		void List<T>(IList<T> results);
 
 		/// <summary>
-		/// Strongly-typed version of <see cref="List()" />.
+		/// Get the results.
 		/// </summary>
+		/// <returns>The results.</returns>
+		/// <typeparam name="T">The type of the result elements.</typeparam>
 		IList<T> List<T>();
 
 		/// <summary>

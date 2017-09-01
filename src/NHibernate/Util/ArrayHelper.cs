@@ -87,24 +87,43 @@ namespace NHibernate.Util
 			return sb.ToString();
 		}
 
-
 		/// <summary>
 		/// Append all elements in the 'from' list to the 'to' list.
 		/// </summary>
-		/// <param name="to"></param>
-		/// <param name="from"></param>
+		/// <param name="to">The target list.</param>
+		/// <param name="from">The source list.</param>
 		public static void AddAll(IList to, IList from)
 		{
-			foreach (object obj in from)
+			foreach (var obj in from)
 			{
 				to.Add(obj);
 			}
 		}
 
+		/// <summary>
+		/// Append all elements in the 'from' list to the 'to' list.
+		/// </summary>
+		/// <param name="to">The target list.</param>
+		/// <param name="from">The source list.</param>
+		/// <typeparam name="T">The type of the elements in target list.</typeparam>
+		public static void AddAll<T>(IList<T> to, IList from)
+		{
+			foreach (var obj in from)
+			{
+				to.Add((T) obj);
+			}
+		}
+
 		// NH-specific
+		/// <summary>
+		/// Append all elements in the 'from' list to the 'to' list.
+		/// </summary>
+		/// <param name="to">The target list.</param>
+		/// <param name="from">The source list.</param>
+		/// <typeparam name="T">The type of the elements in both lists.</typeparam>
 		public static void AddAll<T>(IList<T> to, IList<T> from)
 		{
-			foreach (T obj in from)
+			foreach (var obj in from)
 				to.Add(obj);
 		}
 

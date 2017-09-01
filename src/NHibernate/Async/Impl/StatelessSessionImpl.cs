@@ -124,7 +124,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		public override async Task ListAsync(CriteriaImpl criteria, IList results, CancellationToken cancellationToken)
+		public override async Task ListAsync<T>(CriteriaImpl criteria, IList<T> results, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			using (new SessionIdLoggingContext(SessionId))

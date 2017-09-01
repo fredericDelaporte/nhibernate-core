@@ -88,7 +88,14 @@ namespace NHibernate.Engine
 		/// </summary>
 		Task<IList<T>> ListAsync<T>(CriteriaImpl criteria, CancellationToken cancellationToken);
 
-		Task ListAsync(CriteriaImpl criteria, IList results, CancellationToken cancellationToken);
+		/// <summary>
+		/// Execute a criteria query, filling its result into supplied list.
+		/// </summary>
+		/// <typeparam name="T">The type of result elements.</typeparam>
+		/// <param name="criteria">The criteria query.</param>
+		/// <param name="results">The result list to fill.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		Task ListAsync<T>(CriteriaImpl criteria, IList<T> results, CancellationToken cancellationToken);
 
 		Task<IList> ListAsync(CriteriaImpl criteria, CancellationToken cancellationToken);
 

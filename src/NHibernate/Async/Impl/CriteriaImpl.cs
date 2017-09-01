@@ -36,7 +36,7 @@ namespace NHibernate.Impl
 			return results;
 		}
 
-		public async Task ListAsync(IList results, CancellationToken cancellationToken = default(CancellationToken))
+		public async Task ListAsync<T>(IList<T> results, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			Before();
@@ -53,7 +53,7 @@ namespace NHibernate.Impl
 		public async Task<IList<T>> ListAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			List<T> results = new List<T>();
+			var results = new List<T>();
 			await (ListAsync(results, cancellationToken)).ConfigureAwait(false);
 			return results;
 		}
@@ -61,21 +61,13 @@ namespace NHibernate.Impl
 		public async Task<T> UniqueResultAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			object result = await (UniqueResultAsync(cancellationToken)).ConfigureAwait(false);
-			if (result == null && typeof (T).IsValueType)
-			{
-				return default(T);
-			}
-			else
-			{
-				return (T) result;
-			}
+			return AbstractQueryImpl.UniqueElement(await (ListAsync<T>(cancellationToken)).ConfigureAwait(false));
 		}
 
 		public async Task<object> UniqueResultAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			return AbstractQueryImpl.UniqueElement(await (ListAsync(cancellationToken)).ConfigureAwait(false));
+			return AbstractQueryImpl.UniqueElement(await (ListAsync<object>(cancellationToken)).ConfigureAwait(false));
 		}
 		/// <content>
 		/// Contains generated async methods
@@ -92,7 +84,7 @@ namespace NHibernate.Impl
 				return root.ListAsync(cancellationToken);
 			}
 
-			public Task ListAsync(IList results, CancellationToken cancellationToken = default(CancellationToken))
+			public Task ListAsync<T>(IList<T> results, CancellationToken cancellationToken = default(CancellationToken))
 			{
 				if (cancellationToken.IsCancellationRequested)
 				{

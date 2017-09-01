@@ -258,7 +258,7 @@ namespace NHibernate.Impl
 			return results;
 		}
 
-		public void List(IList results)
+		public void List<T>(IList<T> results)
 		{
 			Before();
 			try
@@ -273,22 +273,14 @@ namespace NHibernate.Impl
 
 		public IList<T> List<T>()
 		{
-			List<T> results = new List<T>();
+			var results = new List<T>();
 			List(results);
 			return results;
 		}
 
 		public T UniqueResult<T>()
 		{
-			object result = UniqueResult();
-			if (result == null && typeof (T).IsValueType)
-			{
-				return default(T);
-			}
-			else
-			{
-				return (T) result;
-			}
+			return AbstractQueryImpl.UniqueElement(List<T>());
 		}
 
 		public void ClearOrders()
@@ -426,7 +418,7 @@ namespace NHibernate.Impl
 
 		public object UniqueResult()
 		{
-			return AbstractQueryImpl.UniqueElement(List());
+			return AbstractQueryImpl.UniqueElement(List<object>());
 		}
 
 		public ICriteria SetLockMode(LockMode lockMode)
@@ -796,7 +788,7 @@ namespace NHibernate.Impl
 				return root.Future<T>();
 			}
 
-			public void List(IList results)
+			public void List<T>(IList<T> results)
 			{
 				root.List(results);
 			}
