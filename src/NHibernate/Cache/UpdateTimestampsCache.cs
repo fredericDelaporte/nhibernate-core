@@ -18,23 +18,32 @@ namespace NHibernate.Cache
 	public partial class UpdateTimestampsCache
 	{
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(UpdateTimestampsCache));
-		private ICache updateTimestamps;
+		private readonly ICache updateTimestamps;
 		private readonly IBatchableReadOnlyCache _batchReadOnlyUpdateTimestamps;
 		private readonly IBatchableCache _batchUpdateTimestamps;
-
-		private readonly string regionName = typeof(UpdateTimestampsCache).Name;
 
 		public virtual void Clear()
 		{
 			updateTimestamps.Clear();
 		}
 
+		// Since v5.2
+		[Obsolete("Please use overload with an ICache parameter.")]
 		public UpdateTimestampsCache(Settings settings, IDictionary<string, string> props)
+			: this(
+				settings.CacheProvider.BuildCache(
+					(settings.CacheRegionPrefix == null ? "" : settings.CacheRegionPrefix + '.') +
+					typeof(UpdateTimestampsCache).Name,
+					props)) {}
+
+		/// <summary>
+		/// Build the update timestamps cache.
+		/// </summary>x
+		/// <param name="cache">The <see cref="ICache" /> to use.</param>
+		public UpdateTimestampsCache(ICache cache)
 		{
-			string prefix = settings.CacheRegionPrefix;
-			regionName = prefix == null ? regionName : prefix + '.' + regionName;
-			log.Info("starting update timestamps cache at region: {0}", regionName);
-			updateTimestamps = settings.CacheProvider.BuildCache(regionName, props);
+			log.Info("starting update timestamps cache at region: {0}", cache.RegionName);
+			updateTimestamps = cache;
 			// ReSharper disable once SuspiciousTypeConversion.Global
 			_batchReadOnlyUpdateTimestamps = updateTimestamps as IBatchableReadOnlyCache;
 			_batchUpdateTimestamps = updateTimestamps as IBatchableCache;

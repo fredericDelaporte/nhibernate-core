@@ -24,22 +24,41 @@ namespace NHibernate.Cache
 		private readonly string _regionName;
 		private readonly UpdateTimestampsCache _updateTimestampsCache;
 
-		public StandardQueryCache(Settings settings, IDictionary<string, string> props, UpdateTimestampsCache updateTimestampsCache, string regionName)
+		// Since v5.2
+		[Obsolete("Please use overload with an ICache parameter.")]
+		public StandardQueryCache(
+			Settings settings,
+			IDictionary<string, string> props,
+			UpdateTimestampsCache updateTimestampsCache,
+			string regionName)
+			: this(
+				updateTimestampsCache,
+				settings.CacheProvider.BuildCache(
+					(!string.IsNullOrEmpty(settings.CacheRegionPrefix) ? settings.CacheRegionPrefix + '.' : "") +
+					(regionName ?? typeof (StandardQueryCache).FullName),
+					props))
 		{
-			if (regionName == null)
-				regionName = typeof (StandardQueryCache).FullName;
+		}
 
-			String prefix = settings.CacheRegionPrefix;
-			if (!string.IsNullOrEmpty(prefix))
-				regionName = prefix + '.' + regionName;
+		/// <summary>
+		/// Build a query cache.
+		/// </summary>
+		/// <param name="updateTimestampsCache">The cache of updates timestamps.</param>
+		/// <param name="regionCache">The <see cref="ICache" /> to use for the region.</param>
+		public StandardQueryCache(
+			UpdateTimestampsCache updateTimestampsCache,
+			ICache regionCache)
+		{
+			if (regionCache == null)
+				throw new ArgumentNullException(nameof(regionCache));
 
-			Log.Info("starting query cache at region: {0}", regionName);
+			_regionName = regionCache.RegionName;
+			Log.Info("starting query cache at region: {0}", _regionName);
 
-			_queryCache = settings.CacheProvider.BuildCache(regionName, props);
+			_queryCache = regionCache;
 			_batchableReadOnlyCache = _queryCache as IBatchableReadOnlyCache;
 			_batchableCache = _queryCache as IBatchableCache;
 			_updateTimestampsCache = updateTimestampsCache;
-			_regionName = regionName;
 		}
 
 		#region IQueryCache Members
