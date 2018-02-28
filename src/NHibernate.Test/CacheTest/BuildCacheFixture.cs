@@ -28,7 +28,7 @@ namespace NHibernate.Test.CacheTest
 		}
 
 		[Theory]
-		public void CommonRegionHasOneUniqueCacheAndExpectedConcurrency(bool withPrefix)
+		public void CommonRegionHasExpectedConcurrency(bool withPrefix)
 		{
 			const string prefix = "Prefix";
 			const string region = "Common";
@@ -70,11 +70,6 @@ namespace NHibernate.Test.CacheTest
 						Assert.That(relatedAConcurrencyCache, Is.InstanceOf<NonstrictReadWriteCache>(), "Unexpected concurrency for RelatedA");
 						Assert.That(entityBConcurrencyCache, Is.InstanceOf<ReadOnlyCache>(), "Unexpected concurrency for EntityB");
 						Assert.That(relatedBConcurrencyCache, Is.InstanceOf<ReadWriteCache>(), "Unexpected concurrency for RelatedB");
-						Assert.That(entityACache, Is.EqualTo(commonRegionCache), "Unexpected cache for EntityA");
-						Assert.That(entityBCache, Is.EqualTo(commonRegionCache), "Unexpected cache for EntityB");
-						Assert.That(relatedACache, Is.EqualTo(commonRegionCache), "Unexpected cache for RelatedA");
-						Assert.That(relatedBCache, Is.EqualTo(commonRegionCache), "Unexpected cache for RelatedB");
-						Assert.That(queryCache, Is.EqualTo(commonRegionCache), "Unexpected cache for query cache");
 					});
 			}
 			finally

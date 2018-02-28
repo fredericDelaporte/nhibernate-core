@@ -39,26 +39,29 @@ namespace NHibernate.Cache
 			Settings settings,
 			IDictionary<string, string> properties)
 		{
-			return CreateCache(
-				usage, name, mutable, settings,
-				r => settings.CacheProvider.BuildCache(r, properties));
+			var cache = CreateCache(
+				usage, name, settings,
+				(r, u) => settings.CacheProvider.BuildCache(r, properties));
+
+			if (cache != null && mutable && usage == ReadOnly)
+				Log.Warn("read-only cache configured for mutable: {0}", name);
+
+			return cache;
 		}
 
 		/// <summary>
 		/// Creates an <see cref="ICacheConcurrencyStrategy"/> from the parameters.
 		/// </summary>
 		/// <param name="usage">The name of the strategy that <see cref="ICacheProvider"/> should use for the class.</param>
-		/// <param name="name">The name of the class the strategy is being created for.</param>
-		/// <param name="mutable"><see langword="true" /> if the object being stored in the cache is mutable.</param>
+		/// <param name="name">The name of the cache region the strategy is being created for.</param>
 		/// <param name="settings">Used to retrieve the global cache region prefix.</param>
-		/// <param name="regionCacheGetter">The delegate for obtaining the <see cref="ICache" /> to use for the region.</param>
+		/// <param name="regionAndUsageCacheGetter">The delegate for obtaining the <see cref="ICache" /> to use for the region.</param>
 		/// <returns>An <see cref="ICacheConcurrencyStrategy"/> to use for this object in the <see cref="ICache"/>.</returns>
 		public static ICacheConcurrencyStrategy CreateCache(
 			string usage,
 			string name,
-			bool mutable,
 			Settings settings,
-			Func<string, ICache> regionCacheGetter)
+			Func<string, string, ICache> regionAndUsageCacheGetter)
 		{
 			if (usage == null || !settings.IsSecondLevelCacheEnabled) return null; //no cache
 
@@ -71,10 +74,6 @@ namespace NHibernate.Cache
 			switch (usage)
 			{
 				case ReadOnly:
-					if (mutable)
-					{
-						Log.Warn("read-only cache configured for mutable: {0}", name);
-					}
 					ccs = new ReadOnlyCache();
 					break;
 				case ReadWrite:
@@ -94,7 +93,7 @@ namespace NHibernate.Cache
 			ICache impl;
 			try
 			{
-				impl = regionCacheGetter(name);
+				impl = regionAndUsageCacheGetter(name, usage);
 			}
 			catch (CacheException e)
 			{
