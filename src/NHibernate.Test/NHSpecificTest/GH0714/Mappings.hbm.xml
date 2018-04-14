@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH0714">
+  <class name="Entity2">
+    <id name="Id" generator="identity"/>
+  </class>
+
+  <class name="Entity1">
+    <composite-id name="ID" class="Component">
+      <key-many-to-one class="Entity2" name="PK1"/>
+      <key-many-to-one class="Entity2" name="PK2"/>
+    </composite-id>
+  </class>
+</hibernate-mapping>
