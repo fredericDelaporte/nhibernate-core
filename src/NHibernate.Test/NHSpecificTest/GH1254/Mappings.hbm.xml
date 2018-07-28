@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="NHibernate.Test"
+                   namespace="NHibernate.Test.NHSpecificTest.GH1254">
+
+  <class name="Entity">
+    <id name="Id" generator="native"/>
+    <property name="Name"/>
+  </class>
+ 
+  <sql-query name="GetEntityByName">
+    <return class="Entity"/>
+    <query-param name="name" type="string"/>
+    call GetEntityByName(:name)
+  </sql-query>
+
+  <database-object>
+    <create>
+      create procedure GetEntityByName(in name varchar(128))
+        dynamic result sets 1
+        language SQL
+      begin
+        declare v_name varchar(128);
+        declare c cursor with return for select Id, Name from Entity where Name = v_name;
+        set v_name = name;
+        open c;
+      end
+    </create>
+    <drop>
+      drop procedure GetEntityByName(varchar(128))
+    </drop>
+  </database-object>
+</hibernate-mapping>
