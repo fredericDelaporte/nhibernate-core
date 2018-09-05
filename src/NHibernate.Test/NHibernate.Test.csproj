@@ -62,6 +62,7 @@
     <Reference Include="System.Transactions" />
     <Reference Include="System.Threading.Tasks" />
     <Reference Include="System.Data.OracleClient" />
+    <Reference Include="System.ServiceModel" />
     <PackageReference Include="Microsoft.SqlServer.Compact" Version="4.0.8876.1" />
     <PackageReference Include="Oracle.ManagedDataAccess" Version="12.1.2400" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.106" />
