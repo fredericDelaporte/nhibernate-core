@@ -10,7 +10,7 @@ namespace NHibernate.Test.Associations
 	public class ManyToOneFixture : TestCaseMappingByCode
 	{
 		[Test]
-		public void DupColManyToOneQuery()
+		public void DupColManyToOneQueryAndUpdate()
 		{
 			using (var session = OpenSession())
 			{
@@ -18,10 +18,30 @@ namespace NHibernate.Test.Associations
 
 				Assert.That(e, Is.Not.Null);
 				Assert.That(e.ManyToOne1, Is.Not.EqualTo(e.ManyToOne2));
+
+				e.ManyToOne1 = session.Load<EntityWithCompositeId>(_key3);
+				e.ManyToOne2 = session.Load<EntityWithCompositeId>(_key4);
+				session.Flush();
+			}
+
+			using (var session = OpenSession())
+			{
+				var e = session.Query<Parent>().FirstOrDefault();
+
+				Assert.That(e, Is.Not.Null);
+				Assert.That(e.ManyToOne1, Is.Not.EqualTo(e.ManyToOne2));
+
+				Assert.That(e.ManyToOne1.Key, Is.EqualTo(_key3));
+				Assert.That(e.ManyToOne2.Key, Is.EqualTo(_key4));
 			}
 		}
 
 		#region Test Setup
+
+		private CompositeKey _key3;
+		private CompositeKey _key4;
+
+		protected override string CacheConcurrencyStrategy => null;
 
 		protected override HbmMapping GetMappings()
 		{
@@ -49,16 +69,10 @@ namespace NHibernate.Test.Associations
 
 					rc.ManyToOne(
 						e => e.ManyToOne1,
-						m =>
-						{
-							m.Columns(c => c.Name("Id1"), c => c.Name("Id2"));
-						});
+						m => { m.Columns(c => c.Name("Id1"), c => c.Name("Id2")); });
 					rc.ManyToOne(
 						e => e.ManyToOne2,
-						m =>
-						{
-							m.Columns(c => c.Name("Id1"), c => c.Name("Id3"));
-						});
+						m => { m.ColumnsAndFormulas(cf => cf.Formula("Id1"), c => c.Name("Id3")); });
 				});
 
 			return mapper.CompileMappingForAllExplicitlyAddedEntities();
@@ -92,6 +106,11 @@ namespace NHibernate.Test.Associations
 				session.Save(manyToOneParent.ManyToOne1);
 				session.Save(manyToOneParent.ManyToOne2);
 				session.Save(manyToOneParent);
+
+				_key3 = new CompositeKey { Id1 = 5, Id2 = 3, };
+				_key4 = new CompositeKey { Id1 = 5, Id2 = 2, };
+				session.Save(new EntityWithCompositeId { Key = _key3, Name = "Composite3" });
+				session.Save(new EntityWithCompositeId { Key = _key4, Name = "Composite4" });
 
 				session.Flush();
 				transaction.Commit();
