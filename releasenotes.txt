@@ -1,4 +1,21 @@
-﻿Build 5.5.1
+﻿Build 5.5.2
+=============================
+
+Release notes - NHibernate - Version 5.5.2
+
+3 issues were resolved in this release, including CVE xxx through the merge of 5.4.9.
+
+** Bug
+
+   * #3536 MemberwiseClone should be virtual in dotnet 9 preview 3
+
+** Task
+
+   * #3xxx Release 5.5.1
+   * #3xxx Merge 5.4.9 into 5.5.x
+
+
+Build 5.5.1
 =============================
 
 Release notes - NHibernate - Version 5.5.1
