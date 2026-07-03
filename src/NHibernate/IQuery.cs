@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using NHibernate.Impl;
 using NHibernate.Transform;
 using NHibernate.Type;
-using System.Collections.Generic;
-using NHibernate.Impl;
 
 namespace NHibernate
 {
@@ -18,7 +19,7 @@ namespace NHibernate
 		/// <param name="val">The possibly null parameter value</param>
 		/// <param name="type">The NHibernate <see cref="IType"/>.</param>
 		/// <param name="preferMetadataType">If true supplied type is used only if parameter metadata is missing</param>
-		public static void SetParameter(this IQuery query, string name, object val, IType type, bool preferMetadataType)
+		public static void SetParameter(this IQuery query, string name, object? val, IType type, bool preferMetadataType)
 		{
 			if (query is AbstractQueryImpl impl)
 			{
@@ -178,11 +179,12 @@ namespace NHibernate
 		/// <exception cref="HibernateException">
 		/// Thrown when there is more than one matching result.
 		/// </exception>
-		object UniqueResult();
+		object? UniqueResult();
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="UniqueResult()"/>.
 		/// </summary>
+		[return: MaybeNull]
 		T UniqueResult<T>();
 
 		/// <summary>
@@ -237,7 +239,7 @@ namespace NHibernate
 		/// Set the name of the cache region.
 		/// <param name="cacheRegion">The name of a query cache region, or <see langword="null" />
 		/// for the default query cache</param>
-		IQuery SetCacheRegion(string cacheRegion);
+		IQuery SetCacheRegion(string? cacheRegion);
 
 		/// <summary>
 		/// Set a timeout for the underlying ADO.NET query.
@@ -260,7 +262,7 @@ namespace NHibernate
 
 		/// <summary> Add a comment to the generated SQL.</summary>
 		/// <param name="comment">a human-readable string </param>
-		IQuery SetComment(string comment);
+		IQuery SetComment(string? comment);
 
 		/// <summary>
 		/// Override the current session flush mode, just for this query.
@@ -278,7 +280,7 @@ namespace NHibernate
 		/// <param name="position">Position of the parameter in the query, numbered from <c>0</c></param>
 		/// <param name="val">The possibly null parameter value</param>
 		/// <param name="type">The NHibernate type</param>
-		IQuery SetParameter(int position, object val, IType type);
+		IQuery SetParameter(int position, object? val, IType type);
 
 		/// <summary>
 		/// Bind a value to a named query parameter
@@ -286,7 +288,7 @@ namespace NHibernate
 		/// <param name="name">The name of the parameter</param>
 		/// <param name="val">The possibly null parameter value</param>
 		/// <param name="type">The NHibernate <see cref="IType"/>.</param>
-		IQuery SetParameter(string name, object val, IType type);
+		IQuery SetParameter(string name, object? val, IType type);
 
 		/// <summary>
 		/// Bind a value to an indexed parameter.

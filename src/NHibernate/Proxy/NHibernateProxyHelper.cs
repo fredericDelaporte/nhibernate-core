@@ -58,7 +58,7 @@ namespace NHibernate.Proxy
 			return entity.GetType();
 		}
 
-		public static bool IsProxy(this object entity)
+		public static bool IsProxy(this object? entity)
 		{
 			return Environment.BytecodeProvider.ProxyFactoryFactory.IsProxy(entity);
 		}

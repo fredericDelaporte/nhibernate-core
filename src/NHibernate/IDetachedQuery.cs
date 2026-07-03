@@ -37,7 +37,7 @@ namespace NHibernate
 		/// Set the name of the cache region.
 		/// <param name="cacheRegion">The name of a query cache region, or <see langword="null" />
 		/// for the default query cache</param>
-		IDetachedQuery SetCacheRegion(string cacheRegion);
+		IDetachedQuery SetCacheRegion(string? cacheRegion);
 
 		/// <summary> 
 		/// Entities retrieved by this query will be loaded in 

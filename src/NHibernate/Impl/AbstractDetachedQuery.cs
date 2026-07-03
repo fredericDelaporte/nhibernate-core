@@ -28,9 +28,9 @@ namespace NHibernate.Impl
 		// Another issue, to hold params locally, is that NH need session to discover some untyped param.
 		// Parameters rules are delegated to IQuery implementation.
 		// Untyped Parameters
-		protected readonly Dictionary<int, object> posUntypeParams = new Dictionary<int, object>(4);
-		protected readonly Dictionary<string, object> namedUntypeParams = new Dictionary<string, object>();
-		protected readonly Dictionary<string, IEnumerable> namedUntypeListParams = new Dictionary<string, IEnumerable>(2);
+		protected readonly Dictionary<int, object?> posUntypeParams = new(4);
+		protected readonly Dictionary<string, object?> namedUntypeParams = [];
+		protected readonly Dictionary<string, IEnumerable?> namedUntypeListParams = new(2);
 
 		// Optional parameters are used for parameters values from bean.
 		// The IQuery implementation use the actualNamedParameters to know which property it need.
@@ -45,13 +45,13 @@ namespace NHibernate.Impl
 		protected readonly Dictionary<string, LockMode> lockModes = new Dictionary<string, LockMode>(2);
 		protected readonly RowSelection selection = new RowSelection();
 		protected bool cacheable;
-		protected string cacheRegion;
+		protected string? cacheRegion;
 		protected bool readOnly;
 		protected FlushMode flushMode = FlushMode.Unspecified;
-		protected IResultTransformer resultTransformer;
+		protected IResultTransformer? resultTransformer;
 		protected bool shouldIgnoredUnknownNamedParameters;
 		protected CacheMode? cacheMode;
-		protected string comment;
+		protected string? comment;
 
 		#region IDetachedQuery Members
 
@@ -69,7 +69,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public virtual IDetachedQuery SetComment(string comment)
+		public virtual IDetachedQuery SetComment(string? comment)
 		{
 			this.comment = comment;
 			return this;
@@ -81,7 +81,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public virtual IDetachedQuery SetCacheRegion(string cacheRegion)
+		public virtual IDetachedQuery SetCacheRegion(string? cacheRegion)
 		{
 			this.cacheRegion = cacheRegion;
 			return this;
@@ -113,13 +113,13 @@ namespace NHibernate.Impl
 			lockModes[alias] = lockMode;
 		}
 
-		public IDetachedQuery SetParameter(int position, object val, IType type)
+		public IDetachedQuery SetParameter(int position, object? val, IType type)
 		{
 			posParams[position] = new TypedValue(type, val);
 			return this;
 		}
 
-		public IDetachedQuery SetParameter(string name, object val, IType type)
+		public IDetachedQuery SetParameter(string name, object? val, IType type)
 		{
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name", "Is null or empty.");
@@ -127,13 +127,13 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IDetachedQuery SetParameter(int position, object val)
+		public IDetachedQuery SetParameter(int position, object? val)
 		{
 			posUntypeParams[position] = val;
 			return this;
 		}
 
-		public IDetachedQuery SetParameter(string name, object val)
+		public IDetachedQuery SetParameter(string name, object? val)
 		{
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name", "Is null or empty.");
@@ -141,7 +141,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IDetachedQuery SetParameterList(string name, IEnumerable vals, IType type)
+		public IDetachedQuery SetParameterList(string name, IEnumerable? vals, IType type)
 		{
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name", "Is null or empty.");
@@ -149,7 +149,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IDetachedQuery SetParameterList(string name, IEnumerable vals)
+		public IDetachedQuery SetParameterList(string name, IEnumerable? vals)
 		{
 			if (string.IsNullOrEmpty(name))
 				throw new ArgumentNullException("name", "Is null or empty.");
@@ -165,25 +165,25 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IDetachedQuery SetAnsiString(int position, string val)
+		public IDetachedQuery SetAnsiString(int position, string? val)
 		{
 			SetParameter(position, val, NHibernateUtil.AnsiString);
 			return this;
 		}
 
-		public IDetachedQuery SetAnsiString(string name, string val)
+		public IDetachedQuery SetAnsiString(string name, string? val)
 		{
 			SetParameter(name, val, NHibernateUtil.AnsiString);
 			return this;
 		}
 
-		public IDetachedQuery SetBinary(int position, byte[] val)
+		public IDetachedQuery SetBinary(int position, byte[]? val)
 		{
 			SetParameter(position, val, NHibernateUtil.Binary);
 			return this;
 		}
 
-		public IDetachedQuery SetBinary(string name, byte[] val)
+		public IDetachedQuery SetBinary(string name, byte[]? val)
 		{
 			SetParameter(name, val, NHibernateUtil.Binary);
 			return this;

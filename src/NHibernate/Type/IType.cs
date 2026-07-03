@@ -305,7 +305,7 @@ namespace NHibernate.Type
 		/// <param name="x">The left hand side object.</param>
 		/// <param name="y">The right hand side object.</param>
 		/// <returns>True if the two objects contain the same values.</returns>
-		bool IsEqual(object x, object y);
+		bool IsEqual(object? x, object? y);
 
 		/// <summary>
 		/// When implemented by a class, compare two instances of the class mapped by this

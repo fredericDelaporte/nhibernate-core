@@ -1,5 +1,3 @@
-using NHibernate.Loader;
-
 namespace NHibernate
 {
 	// 6.0 TODO: merge into 'ICriteria'.
@@ -13,6 +11,6 @@ namespace NHibernate
 		/// <param name="associationPath">The criteria association path. If empty, the root entity for the given
 		/// criteria is used.</param>
 		/// <param name="alias">The criteria alias. If empty, the current <see cref="ICriteria"/> criteria is used.</param>
-		ICriteria Fetch(SelectMode selectMode, string associationPath, string alias);
+		ICriteria Fetch(SelectMode selectMode, string associationPath, string? alias);
 	}
 }

@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 
 namespace NHibernate.Impl
 {
@@ -26,26 +27,26 @@ namespace NHibernate.Impl
 		protected internal ParameterMetadata parameterMetadata;
 
 		private readonly RowSelection selection;
-		private readonly List<object> values = new List<object>(4);
-		private readonly List<IType> types = new List<IType>(4);
+		private readonly List<object?> values = new(4);
+		private readonly List<IType> types = new(4);
 		private readonly Dictionary<string, TypedValue> namedParameters = new Dictionary<string, TypedValue>(4);
 		protected readonly Dictionary<string, TypedValue> namedParameterLists = new Dictionary<string, TypedValue>(4);
 		private bool cacheable;
-		private string cacheRegion;
+		private string? cacheRegion;
 		private bool? readOnly;
 		private static readonly object UNSET_PARAMETER = new object();
-		private static readonly IType UNSET_TYPE = null;
-		private object optionalId;
-		private object optionalObject;
-		private string optionalEntityName;
+		private static readonly IType UNSET_TYPE = null!;
+		private object? optionalId;
+		private object? optionalObject;
+		private string? optionalEntityName;
 		private FlushMode flushMode = FlushMode.Unspecified;
 		private FlushMode sessionFlushMode = FlushMode.Unspecified;
-		private object collectionKey;
-		private IResultTransformer resultTransformer;
+		private object? collectionKey;
+		private IResultTransformer? resultTransformer;
 		private bool shouldIgnoredUnknownNamedParameters;
 		private CacheMode? cacheMode;
 		private CacheMode? sessionCacheMode;
-		private string comment;
+		private string? comment;
 
 		protected AbstractQueryImpl(string queryString, FlushMode flushMode, ISessionImplementor session,
 			ParameterMetadata parameterMetadata)
@@ -63,7 +64,7 @@ namespace NHibernate.Impl
 			get { return cacheable; }
 		}
 
-		public string CacheRegion
+		public string? CacheRegion
 		{
 			get { return cacheRegion; }
 		}
@@ -184,7 +185,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		private string ExpandParameterList(string query, string name, TypedValue typedList, IDictionary<string, TypedValue> namedParamsCopy)
 		{
-			var vals = (IEnumerable) typedList.Value;
+			var vals = (IEnumerable) (typedList.Value ?? throw new InvalidOperationException("Parameter list value cannot be null"));
 			var type = typedList.Type;
 
 			var typedValues = (from object value in vals
@@ -217,7 +218,7 @@ namespace NHibernate.Impl
 
 		#region Parameters
 
-		public IQuery SetParameter(int position, object val, IType type)
+		public IQuery SetParameter(int position, object? val, IType type)
 		{
 			CheckPositionalParameter(position);
 			int size = values.Count;
@@ -240,20 +241,24 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IQuery SetParameter(string name, object val, IType type)
+		public IQuery SetParameter(string name, object? val, IType type)
 		{
 			return SetParameter(name, val, type, false);
 		}
 
 		//TODO 6.0: Add to IQuery interface
-		public IQuery SetParameter(string name, object val, IType type, bool preferMetadataType)
+		public IQuery SetParameter(string name, object? val, IType? type, bool preferMetadataType)
 		{
 			if (CheckParameterIgnored(name))
 				return this;
 
 			if (type == null || preferMetadataType)
 			{
-				type = parameterMetadata.GetNamedParameterExpectedType(name) ?? type ?? ParameterHelper.GuessType(val, session.Factory);
+				type = parameterMetadata.GetNamedParameterExpectedType(name) ?? type
+					?? ParameterHelper.GuessType(
+						val ?? throw new InvalidOperationException(
+							"Parameter type must be provided for null values when the parameter type cannot be inferred from the query"),
+						session.Factory);
 			}
 
 			namedParameters[name] = new TypedValue(type, val, false);
@@ -303,7 +308,7 @@ namespace NHibernate.Impl
 				ParameterHelper.GuessType(typeof(T), session.Factory));
 		}
 
-		public IQuery SetParameter(string name, object val)
+		public IQuery SetParameter(string name, object? val)
 		{
 			return SetParameter(name, val, null, true);
 		}
@@ -322,7 +327,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IQuery SetAnsiString(int position, string val)
+		public IQuery SetAnsiString(int position, string? val)
 		{
 			SetParameter(position, val, NHibernateUtil.AnsiString);
 			return this;
@@ -742,7 +747,7 @@ namespace NHibernate.Impl
 					return this;
 			}
 
-			object firstValue = vals.Cast<object>().FirstOrDefault();
+			var firstValue = vals.Cast<object>().FirstOrDefault();
 			SetParameterList(
 				name,
 				vals,
@@ -773,7 +778,7 @@ namespace NHibernate.Impl
 			get { return namedParameterLists; }
 		}
 
-		// TODO 6.0: Change type to IList<object>
+		// TODO 6.0: Change type to IList<object?>
 		protected virtual IList Values
 		{
 			get { return values; }
@@ -834,7 +839,7 @@ namespace NHibernate.Impl
 
 		public abstract IQuery SetLockMode(string alias, LockMode lockMode);
 
-		public IQuery SetComment(string comment)
+		public IQuery SetComment(string? comment)
 		{
 			this.comment = comment;
 			return this;
@@ -856,7 +861,7 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public IQuery SetCacheRegion(string cacheRegion)
+		public IQuery SetCacheRegion(string? cacheRegion)
 		{
 			if (cacheRegion != null)
 				this.cacheRegion = cacheRegion.Trim();
@@ -947,32 +952,34 @@ namespace NHibernate.Impl
 		public abstract IList List();
 		public abstract void List(IList results);
 		public abstract IList<T> List<T>();
+
+		[return:MaybeNull]
 		public T UniqueResult<T>()
 		{
-			object result = UniqueResult();
-			if (result == null && typeof(T).IsValueType)
+			var result = UniqueResult();
+			if (result == null)
 			{
-				return default(T);
+				return default;
 			}
 			else
 			{
-				return (T)result;
+				return (T) result;
 			}
 		}
 
-		public object UniqueResult()
+		public object? UniqueResult()
 		{
 			return UniqueElement(List());
 		}
 
-		internal static object UniqueElement(IList list)
+		internal static object? UniqueElement(IList list)
 		{
 			int size = list.Count;
 			if (size == 0)
 			{
 				return null;
 			}
-			object first = list[0];
+			var first = list[0];
 			for (int i = 1; i < size; i++)
 			{
 				if (list[i] != first)
@@ -988,7 +995,7 @@ namespace NHibernate.Impl
 			return types.ToArray();
 		}
 
-		public virtual object[] ValueArray()
+		public virtual object?[] ValueArray()
 		{
 			return values.ToArray();
 		}

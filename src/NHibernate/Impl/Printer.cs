@@ -19,7 +19,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="entity">an actual entity object, not a proxy!</param>
 		/// <returns></returns>
-		public string ToString(object entity)
+		public string? ToString(object entity)
 		{
 			IClassMetadata cm = _factory.GetClassMetadata(entity.GetType());
 			if (cm == null)
@@ -27,7 +27,7 @@ namespace NHibernate.Impl
 				return entity.GetType().FullName;
 			}
 
-			IDictionary<string, string> result = new Dictionary<string, string>();
+			IDictionary<string, string?> result = new Dictionary<string, string?>();
 
 			if (cm.HasIdentifierProperty)
 			{
@@ -55,7 +55,7 @@ namespace NHibernate.Impl
 			return cm.EntityName + CollectionPrinter.ToString(result);
 		}
 
-		public string ToString(IType[] types, object[] values)
+		public string ToString(IType[] types, object?[] values)
 		{
 			List<string> list = new List<string>(types.Length);
 

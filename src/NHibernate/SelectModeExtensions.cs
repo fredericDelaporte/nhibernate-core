@@ -31,7 +31,7 @@ namespace NHibernate
 		/// <c>curCriteriaEntityType => curCriteriaEntityType.ChildEntity.SubEntity</c>.
 		/// </summary>
 		public static QueryOver<TRoot, TSubType> Fetch<TRoot, TSubType>(
-			this QueryOver<TRoot,TSubType> queryOver, SelectMode mode,
+			this QueryOver<TRoot, TSubType> queryOver, SelectMode mode,
 			params Expression<Func<TSubType, object>>[] associationPaths)
 		{
 			Fetch((IQueryOver<TRoot, TSubType>) queryOver, mode, associationPaths);
@@ -44,7 +44,7 @@ namespace NHibernate
 		/// <c>curCriteriaEntityType => curCriteriaEntityType.ChildEntity.SubEntity</c>.
 		/// </summary>
 		public static QueryOver<TRoot, TSubType> Fetch<TRoot, TSubType>(
-			this QueryOver<TRoot,TSubType> queryOver, params Expression<Func<TSubType, object>>[] associationPaths)
+			this QueryOver<TRoot, TSubType> queryOver, params Expression<Func<TSubType, object>>[] associationPaths)
 		{
 			return Fetch(queryOver, SelectMode.Fetch, associationPaths);
 		}
@@ -55,7 +55,7 @@ namespace NHibernate
 		/// <c>curCriteriaEntityType => curCriteriaEntityType.ChildEntity.SubEntity</c>.
 		/// </summary>
 		public static IQueryOver<TRoot, TSubType> Fetch<TRoot, TSubType>(
-			this IQueryOver<TRoot,TSubType> queryOver, params Expression<Func<TSubType, object>>[] associationPaths)
+			this IQueryOver<TRoot, TSubType> queryOver, params Expression<Func<TSubType, object>>[] associationPaths)
 		{
 			return Fetch(queryOver, SelectMode.Fetch, associationPaths);
 		}
@@ -66,7 +66,7 @@ namespace NHibernate
 		/// </summary>
 		public static TThis Fetch<TThis>(
 			this TThis queryOver, SelectMode mode, params Expression<Func<object>>[] aliasedAssociationPaths)
-			where TThis: IQueryOver
+			where TThis : IQueryOver
 		{
 			var criteria = queryOver.UnderlyingCriteria;
 			foreach (var aliasedPath in aliasedAssociationPaths)
@@ -89,7 +89,7 @@ namespace NHibernate
 		/// <param name="associationPath">The association path for the given <paramref name="alias"/> criteria.</param>
 		/// <param name="alias">The criteria alias. If null or empty, the current criteria will be used.</param>
 		/// <returns>The current criteria.</returns>
-		public static ICriteria Fetch(this ICriteria criteria, SelectMode mode, string associationPath, string alias = null)
+		public static ICriteria Fetch(this ICriteria criteria, SelectMode mode, string associationPath, string? alias = null)
 		{
 			var q = CastOrThrow<ISupportSelectModeCriteria>(criteria);
 			q.Fetch(mode, associationPath, alias);
@@ -102,7 +102,7 @@ namespace NHibernate
 		/// <c>curCriteriaEntityType => curCriteriaEntityType</c> or
 		/// <c>curCriteriaEntityType => curCriteriaEntityType.ChildEntity.SubEntity</c>.
 		/// </summary>
-		public static ICriteria Fetch(this ICriteria criteria, string associationPath, string alias = null)
+		public static ICriteria Fetch(this ICriteria criteria, string associationPath, string? alias = null)
 		{
 			return Fetch(criteria, SelectMode.Fetch, associationPath, alias);
 		}

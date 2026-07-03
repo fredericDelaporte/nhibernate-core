@@ -160,7 +160,7 @@ namespace NHibernate.Criterion
 			return new DetachedCriteria(impl, criteria.CreateCriteria(associationPath, alias, joinType, withClause));
 		}
 
-		public string Alias
+		public string? Alias
 		{
 			get { return criteria.Alias; }
 		}
@@ -242,9 +242,9 @@ namespace NHibernate.Criterion
 			return string.Format("DetachableCriteria({0})", criteria);
 		}
 
-		public DetachedCriteria GetCriteriaByPath(string path)
+		public DetachedCriteria? GetCriteriaByPath(string path)
 		{
-			ICriteria tmpCrit = criteria.GetCriteriaByPath(path);
+			var tmpCrit = criteria.GetCriteriaByPath(path);
 			if (tmpCrit == null)
 			{
 				return null;
@@ -252,9 +252,9 @@ namespace NHibernate.Criterion
 			return new DetachedCriteria(impl, tmpCrit);
 		}
 
-		public DetachedCriteria GetCriteriaByAlias(string alias)
+		public DetachedCriteria? GetCriteriaByAlias(string alias)
 		{
-			ICriteria tmpCrit = criteria.GetCriteriaByAlias(alias);
+			var tmpCrit = criteria.GetCriteriaByAlias(alias);
 			if (tmpCrit == null)
 			{
 				return null;

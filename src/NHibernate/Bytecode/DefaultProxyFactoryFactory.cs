@@ -24,7 +24,7 @@ namespace NHibernate.Bytecode
 			return true;
 		}
 
-		public bool IsProxy(object entity)
+		public bool IsProxy(object? entity)
 		{
 			return entity is INHibernateProxy;
 		}

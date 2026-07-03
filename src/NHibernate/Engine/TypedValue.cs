@@ -14,8 +14,8 @@ namespace NHibernate.Engine
 		// The ParameterListComparer is the comparer introduced in NH to fix NH-845 
 
 		private readonly IType type;
-		private readonly object value;
-		private readonly IEqualityComparer<TypedValue> comparer;
+		private readonly object? value;
+		private readonly IEqualityComparer<TypedValue?> comparer;
 
 		/// <summary>
 		/// Constructor for typed value that may represent a simple value or a list value (for a parameter list).
@@ -25,7 +25,7 @@ namespace NHibernate.Engine
 		/// <param name="value">The value.</param>
 		/// <remarks>The logic for infering if the value should be considered as a list value is minimal and will not
 		/// catch all cases, like hashset.</remarks>
-		public TypedValue(IType type, object value) : this (type, value, !type.IsCollectionType && value is ICollection && !type.ReturnedClass.IsArray)
+		public TypedValue(IType type, object? value) : this(type, value, !type.IsCollectionType && value is ICollection && !type.ReturnedClass.IsArray)
 		{
 		}
 
@@ -36,16 +36,16 @@ namespace NHibernate.Engine
 		/// <param name="value">The value.</param>
 		/// <param name="isList"><see langword="true" /> if the value is a list value (for a parameter list),
 		/// <see langword="false" /> otherwise.</param>
-		public TypedValue(IType type, object value, bool isList)
+		public TypedValue(IType type, object? value, bool isList)
 		{
 			if (isList && value != null && !(value is IEnumerable))
 				throw new ArgumentException($"{nameof(value)} must be an {nameof(IEnumerable)} when {nameof(isList)} is true", nameof(value));
 			this.type = type;
 			this.value = value;
-			comparer = isList ? (IEqualityComparer<TypedValue>) new ParameterListComparer() : new DefaultComparer();
+			comparer = isList ? new ParameterListComparer() : new DefaultComparer();
 		}
 
-		public object Value
+		public object? Value
 		{
 			get { return value; }
 		}
@@ -55,7 +55,7 @@ namespace NHibernate.Engine
 			get { return type; }
 		}
 
-		public IEqualityComparer<TypedValue> Comparer
+		public IEqualityComparer<TypedValue?> Comparer
 		{
 			get { return comparer; }
 		}
@@ -65,20 +65,20 @@ namespace NHibernate.Engine
 			return comparer.GetHashCode(this);
 		}
 
-		public override bool Equals(object obj)
+		public override bool Equals(object? obj)
 		{
 			return comparer.Equals(this, obj as TypedValue);
 		}
 
-		public override string ToString()
+		public override string? ToString()
 		{
 			return value == null ? "null" : value.ToString();
 		}
 
 		[Serializable]
-		public class ParameterListComparer : IEqualityComparer<TypedValue>
+		public class ParameterListComparer : IEqualityComparer<TypedValue?>
 		{
-			public bool Equals(TypedValue x, TypedValue y)
+			public bool Equals(TypedValue? x, TypedValue? y)
 			{
 				if (ReferenceEquals(x, y))
 					return true;
@@ -89,14 +89,14 @@ namespace NHibernate.Engine
 				return IsEquals(x.type, x.value as IEnumerable, y.value as IEnumerable);
 			}
 
-			public int GetHashCode(TypedValue obj)
+			public int GetHashCode(TypedValue? obj)
 			{
-				return GetHashCode(obj.type, obj.value as IEnumerable);
+				return GetHashCode(obj?.type, obj?.value as IEnumerable);
 			}
 
-			private int GetHashCode(IType type, IEnumerable values)
+			private int GetHashCode(IType? type, IEnumerable? values)
 			{
-				if (values == null)
+				if (values == null || type == null)
 					return 0;
 
 				unchecked
@@ -110,7 +110,7 @@ namespace NHibernate.Engine
 				}
 			}
 
-			private bool IsEquals(IType type, IEnumerable x, IEnumerable y)
+			private bool IsEquals(IType type, IEnumerable? x, IEnumerable? y)
 			{
 				if (x == y)
 					return true;
@@ -153,9 +153,9 @@ namespace NHibernate.Engine
 		}
 
 		[Serializable]
-		public class DefaultComparer : IEqualityComparer<TypedValue>
+		public class DefaultComparer : IEqualityComparer<TypedValue?>
 		{
-			public bool Equals(TypedValue x, TypedValue y)
+			public bool Equals(TypedValue? x, TypedValue? y)
 			{
 				if (ReferenceEquals(x, y))
 					return true;
@@ -166,9 +166,9 @@ namespace NHibernate.Engine
 				return x.type.IsEqual(y.value, x.value);
 			}
 
-			public int GetHashCode(TypedValue obj)
+			public int GetHashCode(TypedValue? obj)
 			{
-				return obj.value == null ? 0 : obj.type.GetHashCode(obj.value);
+				return obj?.value == null ? 0 : obj.type.GetHashCode(obj.value);
 			}
 		}
 	}

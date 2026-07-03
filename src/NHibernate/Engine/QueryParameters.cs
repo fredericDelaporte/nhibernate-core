@@ -22,7 +22,7 @@ namespace NHibernate.Engine
 
 		public QueryParameters() : this(TypeHelper.EmptyTypeArray, Array.Empty<object>()) {}
 
-		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues, object optionalObject, string optionalEntityName, object optionalObjectId)
+		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues, object? optionalObject, string? optionalEntityName, object? optionalObjectId)
 			: this(positionalParameterTypes, postionalParameterValues)
 		{
 			OptionalObject = optionalObject;
@@ -33,21 +33,21 @@ namespace NHibernate.Engine
 		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues)
 			: this(positionalParameterTypes, postionalParameterValues, null, null, false, false, false, null, null, false, null) {}
 
-		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues, object[] collectionKeys)
+		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues, object[]? collectionKeys)
 			: this(positionalParameterTypes, postionalParameterValues, null, collectionKeys) {}
 
-		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues, IDictionary<string, TypedValue> namedParameters, object[] collectionKeys)
+		public QueryParameters(IType[] positionalParameterTypes, object[] postionalParameterValues, IDictionary<string, TypedValue>? namedParameters, object[]? collectionKeys)
 			: this(positionalParameterTypes, postionalParameterValues, namedParameters, null, null, false, false, false, null, null, collectionKeys, null) {}
 
-		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, IDictionary<string, LockMode> lockModes, RowSelection rowSelection,
-		                       bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
+		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, IDictionary<string, LockMode>? lockModes, RowSelection? rowSelection,
+		                       bool isReadOnlyInitialized, bool readOnly, bool cacheable, string? cacheRegion, string? comment, bool isLookupByNaturalKey, IResultTransformer? transformer)
 			: this(positionalParameterTypes, positionalParameterValues, null, lockModes, rowSelection, isReadOnlyInitialized, readOnly, cacheable, cacheRegion, comment, null, transformer)
 		{
 			NaturalKeyLookup = isLookupByNaturalKey;
 		}
 
 		public QueryParameters(IDictionary<string, TypedValue> namedParameters, IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized,
-		                       bool readOnly, bool cacheable, string cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer transformer)
+		                       bool readOnly, bool cacheable, string? cacheRegion, string comment, bool isLookupByNaturalKey, IResultTransformer? transformer)
 			: this(
 				TypeHelper.EmptyTypeArray, Array.Empty<object>(), namedParameters, lockModes, rowSelection, isReadOnlyInitialized, readOnly, cacheable, cacheRegion, comment, null,
 				transformer)
@@ -56,12 +56,12 @@ namespace NHibernate.Engine
 			NaturalKeyLookup = isLookupByNaturalKey;
 		}
 
-		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, IDictionary<string, TypedValue> namedParameters,
-		                       IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion,
-		                       string comment, object[] collectionKeys, IResultTransformer transformer)
+		public QueryParameters(IType[] positionalParameterTypes, object?[] positionalParameterValues, IDictionary<string, TypedValue>? namedParameters,
+		                       IDictionary<string, LockMode>? lockModes, RowSelection? rowSelection, bool isReadOnlyInitialized, bool readOnly, bool cacheable, string? cacheRegion,
+		                       string? comment, object[]? collectionKeys, IResultTransformer? transformer)
 		{
 			PositionalParameterTypes = positionalParameterTypes ?? Array.Empty<IType>();
-			PositionalParameterValues = positionalParameterValues ?? Array.Empty<object>();
+			PositionalParameterValues = positionalParameterValues ?? Array.Empty<object?>();
 			NamedParameters = namedParameters ?? new Dictionary<string, TypedValue>(1);
 			LockModes = lockModes;
 			RowSelection = rowSelection;
@@ -74,9 +74,9 @@ namespace NHibernate.Engine
 			ResultTransformer = transformer;
 		}
 
-		public QueryParameters(IType[] positionalParameterTypes, object[] positionalParameterValues, IDictionary<string, TypedValue> namedParameters,
-		                       IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized, bool readOnly, bool cacheable, string cacheRegion,
-		                       string comment, object[] collectionKeys, object optionalObject, string optionalEntityName, object optionalId, IResultTransformer transformer)
+		public QueryParameters(IType[] positionalParameterTypes, object?[] positionalParameterValues, IDictionary<string, TypedValue> namedParameters,
+		                       IDictionary<string, LockMode> lockModes, RowSelection rowSelection, bool isReadOnlyInitialized, bool readOnly, bool cacheable, string? cacheRegion,
+		                       string? comment, object[]? collectionKeys, object? optionalObject, string? optionalEntityName, object? optionalId, IResultTransformer? transformer)
 			: this(
 				positionalParameterTypes, positionalParameterValues, namedParameters, lockModes, rowSelection, isReadOnlyInitialized, readOnly, cacheable, cacheRegion, comment, collectionKeys,
 				transformer)
@@ -103,39 +103,39 @@ namespace NHibernate.Engine
 		/// Gets or sets an array of <see cref="object"/> objects that is stored at the index
 		/// of the Parameter.
 		/// </summary>
-		public object[] PositionalParameterValues { get; set; }
+		public object?[] PositionalParameterValues { get; set; }
 
 		/// <summary>
 		/// Gets or sets the <see cref="RowSelection"/> for the Query.
 		/// </summary>
-		public RowSelection RowSelection { get; set; }
+		public RowSelection? RowSelection { get; set; }
 
 		/// <summary>
 		/// Gets or sets an <see cref="IDictionary"/> that contains the alias name of the
 		/// object from hql as the key and the <see cref="LockMode"/> as the value.
 		/// </summary>
 		/// <value>An <see cref="IDictionary"/> of lock modes.</value>
-		public IDictionary<string, LockMode> LockModes { get; set; }
+		public IDictionary<string, LockMode>? LockModes { get; set; }
 
 		public bool IsReadOnlyInitialized { get; private set; }
 
 		public bool Cacheable { get; set; }
 
-		public string CacheRegion { get; set; }
+		public string? CacheRegion { get; set; }
 
 		public CacheMode? CacheMode { get; set; }
 
-		public string Comment { get; set; }
+		public string? Comment { get; set; }
 
 		public bool ForceCacheRefresh { get; set; }
 
-		public string OptionalEntityName { get; set; }
+		public string? OptionalEntityName { get; set; }
 
-		public object OptionalId { get; set; }
+		public object? OptionalId { get; set; }
 
-		public object OptionalObject { get; set; }
+		public object? OptionalObject { get; set; }
 
-		public object[] CollectionKeys { get; set; }
+		public object[]? CollectionKeys { get; set; }
 
 		public bool Callable { get; set; }
 
@@ -157,13 +157,13 @@ namespace NHibernate.Engine
 			}
 		}
 
-		public SqlString ProcessedSql { get; internal set; }
-		public IEnumerable<IParameterSpecification> ProcessedSqlParameters { get; internal set; }
-		public RowSelection ProcessedRowSelection { get; internal set; }
+		public SqlString? ProcessedSql { get; internal set; }
+		public IEnumerable<IParameterSpecification>? ProcessedSqlParameters { get; internal set; }
+		public RowSelection? ProcessedRowSelection { get; internal set; }
 
 		public bool NaturalKeyLookup { get; set; }
 
-		public IResultTransformer ResultTransformer { get; private set; }
+		public IResultTransformer? ResultTransformer { get; private set; }
 
 		public bool HasAutoDiscoverScalarTypes { get; set; }
 

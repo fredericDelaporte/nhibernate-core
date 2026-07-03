@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
+using System.Diagnostics.CodeAnalysis;
 using NHibernate.Criterion;
 using NHibernate.SqlCommand;
 using NHibernate.Transform;
@@ -59,8 +59,8 @@ namespace NHibernate
 		/// Get the alias of the entity encapsulated by this criteria instance.
 		/// </summary>
 		/// <value>The alias for the encapsulated entity.</value>
-		string Alias { get; }
-		
+		string? Alias { get; }
+
 		/// <summary>
 		/// Was the read-only mode explicitly initialized?
 		/// </summary>
@@ -171,7 +171,7 @@ namespace NHibernate
 		/// <param name="joinType">The type of join to use.</param>
 		/// <param name="withClause">The criteria to be added to the join condition (ON clause)</param>
 		/// <returns>this (for method chaining)</returns>
-		ICriteria CreateAlias(string associationPath, string alias, JoinType joinType, ICriterion withClause);
+		ICriteria CreateAlias(string associationPath, string alias, JoinType joinType, ICriterion? withClause);
 
 		/// <summary>
 		/// Create a new <see cref="ICriteria" />, "rooted" at the associated entity
@@ -196,7 +196,7 @@ namespace NHibernate
 		/// <param name="associationPath"></param>
 		/// <param name="alias"></param>
 		/// <returns></returns>
-		ICriteria CreateCriteria(string associationPath, string alias);
+		ICriteria CreateCriteria(string associationPath, string? alias);
 
 		/// <summary>
 		/// Create a new <see cref="ICriteria" />, "rooted" at the associated entity,
@@ -206,7 +206,7 @@ namespace NHibernate
 		/// <param name="alias">The alias to assign to the joined association (for later reference).</param>
 		/// <param name="joinType">The type of join to use.</param>
 		/// <returns>The created "sub criteria"</returns>
-		ICriteria CreateCriteria(string associationPath, string alias, JoinType joinType);
+		ICriteria CreateCriteria(string associationPath, string? alias, JoinType joinType);
 
 		/// <summary>
 		/// Create a new <see cref="ICriteria" />, "rooted" at the associated entity,
@@ -217,7 +217,7 @@ namespace NHibernate
 		/// <param name="joinType">The type of join to use.</param>
 		/// <param name="withClause">The criteria to be added to the join condition (ON clause)</param>
 		/// <returns>The created "sub criteria"</returns>
-		ICriteria CreateCriteria(string associationPath, string alias, JoinType joinType, ICriterion withClause);
+		ICriteria CreateCriteria(string associationPath, string? alias, JoinType joinType, ICriterion? withClause);
 
 		/// <summary>
 		/// Set a strategy for handling the query results. This determines the
@@ -264,16 +264,16 @@ namespace NHibernate
 		/// <summary>
 		/// Set the name of the cache region.
 		/// </summary>
-		/// <param name="cacheRegion">the name of a query cache region, or <see langword="null" />
+		/// <param name="cacheRegion">The name of a query cache region, or <see langword="null" />
 		/// for the default query cache</param>
 		/// <returns></returns>
-		ICriteria SetCacheRegion(string cacheRegion);
+		ICriteria SetCacheRegion(string? cacheRegion);
 
 		/// <summary> Add a comment to the generated SQL. </summary>
 		/// <param name="comment">a human-readable string </param>
 		/// <returns> this (for method chaining) </returns>
-		ICriteria SetComment(string comment);
-		
+		ICriteria SetComment(string? comment);
+
 		/// <summary> Override the flush mode for this particular query. </summary>
 		/// <param name="flushMode">The flush mode to use. </param>
 		/// <returns> this (for method chaining) </returns>
@@ -298,7 +298,7 @@ namespace NHibernate
 		/// <exception cref="HibernateException">
 		/// If there is more than one matching result
 		/// </exception>
-		object UniqueResult();
+		object? UniqueResult();
 
 		/// <summary>
 		/// Get a enumerable that when enumerated will execute
@@ -347,7 +347,7 @@ namespace NHibernate
 		/// <seealso cref="ICriteria.IsReadOnly" />
 		/// <seealso cref="ICriteria.IsReadOnlyInitialized" />
 		ICriteria SetReadOnly(bool readOnly);
-	
+
 		#region NHibernate specific
 
 		/// <summary>
@@ -364,6 +364,7 @@ namespace NHibernate
 		/// <summary>
 		/// Strongly-typed version of <see cref="UniqueResult()" />.
 		/// </summary>
+		[return: MaybeNull]
 		T UniqueResult<T>();
 
 		/// <summary>
@@ -376,7 +377,7 @@ namespace NHibernate
 		/// Will return null if the criteria does not exists.
 		/// </summary>
 		/// <param name="path">The path.</param>
-		ICriteria GetCriteriaByPath(string path);
+		ICriteria? GetCriteriaByPath(string path);
 
 		/// <summary>
 		/// Allows to get a sub criteria by alias.
@@ -384,7 +385,7 @@ namespace NHibernate
 		/// </summary>
 		/// <param name="alias">The alias.</param>
 		/// <returns></returns>
-		ICriteria GetCriteriaByAlias(string alias);
+		ICriteria? GetCriteriaByAlias(string alias);
 
 		/// <summary>
 		/// Gets the root entity type if available, throws otherwise
